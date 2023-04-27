@@ -6,11 +6,19 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float move_speed;
-    public float groundDrag;
+    public float ground_drag;
+    public float jump_force;
+    public float jump_cooldown;
+    public float air_multiplier;
+    bool ready_to_jump = true;
+
     [Header("Ground Check")]
-    public float playerHeight;
+    public float player_height;
     public LayerMask ground;
     bool grounded;
+
+    [Header("Keyboard key")]
+    public KeyCode jump_key  = KeyCode.Space;
 
     public Transform orientation;
 
@@ -32,13 +40,12 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         //Check for ground
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, ground);
-        MouseInput();
-
+        SpeedControl();
+        ActionInput();
+        Debug.Log(rb.velocity);
         //Apply drag
         if (grounded) {
-            Debug.Log("Test");
-            rb.drag = groundDrag;
+            rb.drag = ground_drag;
         } else {
             rb.drag = 0;
         }
@@ -49,10 +56,17 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
     }
 
-    private void MouseInput()
+    private void ActionInput()
     {
         horizontal_input = Input.GetAxisRaw("Horizontal");
         vertical_input = Input.GetAxisRaw("Vertical");
+
+        //Jump
+        if(Input.GetKey(jump_key) && ready_to_jump && grounded) {//Also chec k if grounded later on
+            ready_to_jump = false;
+            Jump();
+            Invoke(nameof(ResetJump), jump_cooldown);
+        }
     }
 
     private void MovePlayer() 
@@ -60,5 +74,46 @@ public class PlayerMovement : MonoBehaviour
         //Calculate movement direction
         move_direction = orientation.forward * vertical_input + orientation.right * horizontal_input;
         rb.AddForce(move_direction * move_speed, ForceMode.Force);
+    }
+
+    private void SpeedControl()
+    {
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        //Limit velocity if needed
+        if(flatVel.magnitude > move_speed)
+        {
+            Vector3 limited_vel = flatVel.normalized * move_speed;
+            rb.velocity = new Vector3(limited_vel.x, rb.velocity.y, limited_vel.z);
+        }
+    }
+
+     private void Jump()
+    {
+        //reset y velocity
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        rb.AddForce(transform.up * jump_force, ForceMode.Impulse);
+    }
+
+    private void ResetJump()
+    {
+        ready_to_jump = true;
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        if(collision.gameObject.tag == "Ground")
+        {
+            grounded = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision) 
+    {
+        if(collision.gameObject.tag == "Ground")
+        {
+            grounded = false;
+        }
     }
 }
