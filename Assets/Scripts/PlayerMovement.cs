@@ -6,19 +6,17 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float move_speed;
+    public float sprint_speed;
     public float ground_drag;
     public float jump_force;
     public float jump_cooldown;
     public float air_multiplier;
     bool ready_to_jump = true;
-
-    [Header("Ground Check")]
-    public float player_height;
-    public LayerMask ground;
     bool grounded;
 
     [Header("Keyboard key")]
     public KeyCode jump_key  = KeyCode.Space;
+    public KeyCode sprint_key = KeyCode.LeftShift;
 
     public Transform orientation;
 
@@ -42,7 +40,6 @@ public class PlayerMovement : MonoBehaviour
         //Check for ground
         SpeedControl();
         ActionInput();
-        Debug.Log(rb.velocity);
         //Apply drag
         if (grounded) {
             rb.drag = ground_drag;
@@ -73,7 +70,16 @@ public class PlayerMovement : MonoBehaviour
     {
         //Calculate movement direction
         move_direction = orientation.forward * vertical_input + orientation.right * horizontal_input;
-        rb.AddForce(move_direction * move_speed, ForceMode.Force);
+
+        //On ground
+        if(grounded) {
+            rb.AddForce(move_direction * move_speed * 10f, ForceMode.Force);
+        }
+
+        //In the air
+        else if(!grounded) {
+            rb.AddForce(move_direction.normalized * move_speed * 10f * air_multiplier, ForceMode.Force);
+        }
     }
 
     private void SpeedControl()

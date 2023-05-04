@@ -600,15 +600,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e568aa9a1419494abaa0f3d3ce5e323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  move_speed: 25
-  ground_drag: 4
+  move_speed: 6
+  sprint_speed: 0
+  ground_drag: 5
   jump_force: 7
   jump_cooldown: 0.5
-  air_multiplier: 0
-  player_height: 6
-  ground:
-    serializedVersion: 2
-    m_Bits: 64
+  air_multiplier: 0.4
   jump_key: 32
   orientation: {fileID: 1577357032}
 --- !u!1 &1577357031
