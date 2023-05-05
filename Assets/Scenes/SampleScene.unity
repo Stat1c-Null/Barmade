@@ -601,12 +601,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   move_speed: 6
-  sprint_speed: 0
+  sprint_speed: 10
   ground_drag: 5
-  jump_force: 7
+  jump_force: 5
   jump_cooldown: 0.5
   air_multiplier: 0.4
   jump_key: 32
+  sprint_key: 304
   orientation: {fileID: 1577357032}
 --- !u!1 &1577357031
 GameObject:

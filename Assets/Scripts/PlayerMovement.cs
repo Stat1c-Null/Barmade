@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public float air_multiplier;
     bool ready_to_jump = true;
     bool grounded;
+    bool sprinting;
 
     [Header("Keyboard key")]
     public KeyCode jump_key  = KeyCode.Space;
@@ -58,6 +59,13 @@ public class PlayerMovement : MonoBehaviour
         horizontal_input = Input.GetAxisRaw("Horizontal");
         vertical_input = Input.GetAxisRaw("Vertical");
 
+        //Sprint
+        if(Input.GetKey(sprint_key)) {
+            sprinting = true;
+        } else {
+            sprinting = false;
+        }
+
         //Jump
         if(Input.GetKey(jump_key) && ready_to_jump && grounded) {//Also chec k if grounded later on
             ready_to_jump = false;
@@ -72,10 +80,11 @@ public class PlayerMovement : MonoBehaviour
         move_direction = orientation.forward * vertical_input + orientation.right * horizontal_input;
 
         //On ground
-        if(grounded) {
+        if(grounded && !sprinting) {//Walk
             rb.AddForce(move_direction * move_speed * 10f, ForceMode.Force);
+        } else if(grounded && sprinting) {//Run
+            rb.AddForce(move_direction * sprint_speed * 10f, ForceMode.Force);
         }
-
         //In the air
         else if(!grounded) {
             rb.AddForce(move_direction.normalized * move_speed * 10f * air_multiplier, ForceMode.Force);
@@ -87,9 +96,12 @@ public class PlayerMovement : MonoBehaviour
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         //Limit velocity if needed
-        if(flatVel.magnitude > move_speed)
+        if(!sprinting && flatVel.magnitude > move_speed)
         {
             Vector3 limited_vel = flatVel.normalized * move_speed;
+            rb.velocity = new Vector3(limited_vel.x, rb.velocity.y, limited_vel.z);
+        } else if(sprinting && flatVel.magnitude > sprint_speed) {
+            Vector3 limited_vel = flatVel.normalized * sprint_speed;
             rb.velocity = new Vector3(limited_vel.x, rb.velocity.y, limited_vel.z);
         }
     }
