@@ -8,11 +8,15 @@ public class PlayerMovement : MonoBehaviour
     public float move_speed;
     public float sprint_speed;
     public float ground_drag;
+    //Jumping
     public float jump_force;
     public float jump_cooldown;
     public float air_multiplier;
     bool ready_to_jump = true;
     bool grounded;
+    //Stamina
+    public float stamina_run_use;
+    public float stamina;
     bool sprinting;
 
     [Header("Keyboard key")]
@@ -47,6 +51,11 @@ public class PlayerMovement : MonoBehaviour
         } else {
             rb.drag = 0;
         }
+
+        //Restore stamina
+        if(stamina < 100 && sprinting == false) {
+            stamina += stamina_run_use/2 * Time.deltaTime;
+        }
     }
 
     void FixedUpdate()
@@ -60,8 +69,9 @@ public class PlayerMovement : MonoBehaviour
         vertical_input = Input.GetAxisRaw("Vertical");
 
         //Sprint
-        if(Input.GetKey(sprint_key)) {
+        if(Input.GetKey(sprint_key) && stamina > 0) {
             sprinting = true;
+            stamina -= stamina_run_use * Time.deltaTime;
         } else {
             sprinting = false;
         }
