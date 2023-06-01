@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    public float move_speed;
+    private float move_speed;
+    public float walk_speed;
     public float sprint_speed;
     public float ground_drag;
     //Jumping
@@ -19,9 +20,19 @@ public class PlayerMovement : MonoBehaviour
     public float stamina;
     bool sprinting;
 
+    [Header("Crouching")]
+    public float crouch_speed;
+    public float crouchYScale;
+    float startYScale;
+
     [Header("Keyboard key")]
     public KeyCode jump_key  = KeyCode.Space;
     public KeyCode sprint_key = KeyCode.LeftShift;
+    public KeyCode crouch_key = KeyCode.LeftControl;
+
+    [Header("Slope Handling")]
+    public float max_slope_angle;
+    private RaycastHit slope_hit;
 
     public Transform orientation;
 
@@ -32,11 +43,24 @@ public class PlayerMovement : MonoBehaviour
 
     Rigidbody rb;
 
+    public MoveState state;
+
+    public enum MoveState
+    {
+        walk,
+        sprint,
+        crouch,
+        air
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
+        //Get players default size
+        startYScale = transform.localScale.y;
     }
 
     // Update is called once per frame
@@ -44,17 +68,15 @@ public class PlayerMovement : MonoBehaviour
     {
         //Check for ground
         SpeedControl();
+        //Input
         ActionInput();
+        //Movement states 
+        StateHandler();
         //Apply drag
         if (grounded) {
             rb.drag = ground_drag;
         } else {
             rb.drag = 0;
-        }
-
-        //Restore stamina
-        if(stamina < 100 && sprinting == false) {
-            stamina += stamina_run_use/2 * Time.deltaTime;
         }
     }
 
@@ -68,19 +90,51 @@ public class PlayerMovement : MonoBehaviour
         horizontal_input = Input.GetAxisRaw("Horizontal");
         vertical_input = Input.GetAxisRaw("Vertical");
 
-        //Sprint
-        if(Input.GetKey(sprint_key) && stamina > 0) {
-            sprinting = true;
-            stamina -= stamina_run_use * Time.deltaTime;
-        } else {
-            sprinting = false;
-        }
-
         //Jump
         if(Input.GetKey(jump_key) && ready_to_jump && grounded) {//Also chec k if grounded later on
             ready_to_jump = false;
             Jump();
             Invoke(nameof(ResetJump), jump_cooldown);
+        }
+
+        //Crouch
+        if(Input.GetKey(crouch_key)) {
+            transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
+            //Push player down to the ground so it wont be floating
+            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+        }
+
+        //Stop crouching
+        if (Input.GetKeyUp(crouch_key)) {
+            transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+        }
+    }
+
+    //Set speed for different movement states
+    private void StateHandler()
+    {
+        //Mode sprinting
+        if(grounded && Input.GetKey(sprint_key))
+        {
+            state = MoveState.sprint;
+            move_speed = sprint_speed;
+        }
+
+        //Mode Walking
+        else if(grounded) {
+            state = MoveState.walk;
+            move_speed = walk_speed;
+        }
+
+        //Mode crouching
+        else if(Input.GetKey(crouch_key)) {
+            state = MoveState.crouch;
+            move_speed = crouch_speed;
+        }
+
+        //Mode Air
+        else {
+            state = MoveState.air;
         }
     }
 
@@ -90,11 +144,9 @@ public class PlayerMovement : MonoBehaviour
         move_direction = orientation.forward * vertical_input + orientation.right * horizontal_input;
 
         //On ground
-        if(grounded && !sprinting) {//Walk
+        if(grounded) {//Walk
             rb.AddForce(move_direction * move_speed * 10f, ForceMode.Force);
-        } else if(grounded && sprinting) {//Run
-            rb.AddForce(move_direction * sprint_speed * 10f, ForceMode.Force);
-        }
+        } 
         //In the air
         else if(!grounded) {
             rb.AddForce(move_direction.normalized * move_speed * 10f * air_multiplier, ForceMode.Force);
@@ -106,14 +158,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         //Limit velocity if needed
-        if(!sprinting && flatVel.magnitude > move_speed)
+        if(flatVel.magnitude > move_speed)
         {
             Vector3 limited_vel = flatVel.normalized * move_speed;
             rb.velocity = new Vector3(limited_vel.x, rb.velocity.y, limited_vel.z);
-        } else if(sprinting && flatVel.magnitude > sprint_speed) {
-            Vector3 limited_vel = flatVel.normalized * sprint_speed;
-            rb.velocity = new Vector3(limited_vel.x, rb.velocity.y, limited_vel.z);
-        }
+        } 
     }
 
      private void Jump()
@@ -143,5 +192,12 @@ public class PlayerMovement : MonoBehaviour
         {
             grounded = false;
         }
+    }
+
+    private bool OnSlope()
+    {
+        //Detect slope by shooting a raycast laser down
+        //if(Physics.Raycast(transform.position, Vector3.down, out slope_hit, play))
+        return false;
     }
 }
