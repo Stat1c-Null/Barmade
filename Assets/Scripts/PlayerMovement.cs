@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     public float max_slope_angle;
     private RaycastHit slope_hit;
 
+    public float player_height;
     public Transform orientation;
 
     float horizontal_input;
@@ -143,6 +144,13 @@ public class PlayerMovement : MonoBehaviour
         //Calculate movement direction
         move_direction = orientation.forward * vertical_input + orientation.right * horizontal_input;
 
+        //On SLope
+        if(OnSlope())
+        {
+            rb.AddForce(GetSlopeMoveDirection() * move_speed * 20f, ForceMode.Force);
+            Debug.Log("gfd");
+        }
+
         //On ground
         if(grounded) {//Walk
             rb.AddForce(move_direction * move_speed * 10f, ForceMode.Force);
@@ -151,6 +159,9 @@ public class PlayerMovement : MonoBehaviour
         else if(!grounded) {
             rb.AddForce(move_direction.normalized * move_speed * 10f * air_multiplier, ForceMode.Force);
         }
+
+        //Tunr off gravity while on the slope
+        rb.useGravity = !OnSlope();
     }
 
     private void SpeedControl()
@@ -197,7 +208,16 @@ public class PlayerMovement : MonoBehaviour
     private bool OnSlope()
     {
         //Detect slope by shooting a raycast laser down
-        //if(Physics.Raycast(transform.position, Vector3.down, out slope_hit, play))
+        if(Physics.Raycast(transform.position, Vector3.down, out slope_hit, player_height * 0.5f + 0.3f))
+        {
+            float angle = Vector3.Angle(Vector3.up, slope_hit.normal);//Check if angle is gay
+            return angle < max_slope_angle && angle != 0;//True if slope is not straight and angle is bigger then 0
+        }
         return false;
+    }
+
+    private Vector3 GetSlopeMoveDirection()
+    {
+        return Vector3.ProjectOnPlane(move_direction, slope_hit.normal).normalized;//Make slope movement similar to movement on normal ground
     }
 }
