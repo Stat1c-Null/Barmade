@@ -92,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
         vertical_input = Input.GetAxisRaw("Vertical");
 
         //Jump
-        if(Input.GetKey(jump_key) && ready_to_jump && grounded) {//Also chec k if grounded later on
+        if(Input.GetKeyDown(jump_key) && ready_to_jump && grounded) {//Also chec k if grounded later on
             ready_to_jump = false;
             Jump();
             Invoke(nameof(ResetJump), jump_cooldown);
@@ -148,7 +148,10 @@ public class PlayerMovement : MonoBehaviour
         if(OnSlope())
         {
             rb.AddForce(GetSlopeMoveDirection() * move_speed * 20f, ForceMode.Force);
-            Debug.Log("gfd");
+
+            if(rb.velocity.y > 0) {
+                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
         }
 
         //On ground
@@ -166,14 +169,25 @@ public class PlayerMovement : MonoBehaviour
 
     private void SpeedControl()
     {
-        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
-        //Limit velocity if needed
-        if(flatVel.magnitude > move_speed)
+        //Limit speed on slope
+        if(OnSlope())
         {
-            Vector3 limited_vel = flatVel.normalized * move_speed;
-            rb.velocity = new Vector3(limited_vel.x, rb.velocity.y, limited_vel.z);
-        } 
+            if(rb.velocity.magnitude > move_speed) {
+                rb.velocity = rb.velocity.normalized * move_speed;
+            }
+        }
+
+        //Limiting speed on ground or air
+        else {
+            Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+            //Limit velocity if needed
+            if(flatVel.magnitude > move_speed)
+            {
+                Vector3 limited_vel = flatVel.normalized * move_speed;
+                rb.velocity = new Vector3(limited_vel.x, rb.velocity.y, limited_vel.z);
+            } 
+        }
     }
 
      private void Jump()
@@ -205,7 +219,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private bool OnSlope()
+    private bool OnSlope()//Detect if player is moving on the slope
     {
         //Detect slope by shooting a raycast laser down
         if(Physics.Raycast(transform.position, Vector3.down, out slope_hit, player_height * 0.5f + 0.3f))
@@ -216,7 +230,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    private Vector3 GetSlopeMoveDirection()
+    private Vector3 GetSlopeMoveDirection()//Detect the direction in which player needs to move on the slope
     {
         return Vector3.ProjectOnPlane(move_direction, slope_hit.normal).normalized;//Make slope movement similar to movement on normal ground
     }
