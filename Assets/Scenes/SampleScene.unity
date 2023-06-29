@@ -885,20 +885,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e568aa9a1419494abaa0f3d3ce5e323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walk_speed: 5
+  move_speed: 0
+  walk_speed: 6
   sprint_speed: 9
   ground_drag: 5
-  jump_force: 5
-  jump_cooldown: 0.5
+  jump_force: 6
+  jump_cooldown: 0.25
   air_multiplier: 0.4
-  stamina_run_use: 20
-  stamina: 100
-  crouch_speed: 3
+  stamina_run_use: 5
+  staminaRecharge: 3
+  stamina: 0
+  max_stamina: 100
+  crouch_speed: 3.5
   crouchYScale: 0.7
   jump_key: 32
   sprint_key: 304
   crouch_key: 306
-  max_slope_angle: 40
+  max_slope_angle: 50
   player_height: 2
   orientation: {fileID: 1577357032}
   state: 0

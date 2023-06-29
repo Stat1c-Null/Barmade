@@ -5,19 +5,23 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    private float move_speed;
+    public float move_speed;
     public float walk_speed;
     public float sprint_speed;
     public float ground_drag;
     //Jumping
+    [Header("Jumping")]
     public float jump_force;
     public float jump_cooldown;
     public float air_multiplier;
     bool ready_to_jump = true;
     bool grounded;
     //Stamina
+    [Header("Sprinting")]
     public float stamina_run_use;
+    public float staminaRecharge;
     public float stamina;
+    public float max_stamina;
     bool sprinting;
 
     [Header("Crouching")]
@@ -62,6 +66,9 @@ public class PlayerMovement : MonoBehaviour
 
         //Get players default size
         startYScale = transform.localScale.y;
+
+        //Set stamina
+        stamina = max_stamina;
     }
 
     // Update is called once per frame
@@ -102,12 +109,13 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetKey(crouch_key)) {
             transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
             //Push player down to the ground so it wont be floating
-            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+            //rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
         }
 
         //Stop crouching
         if (Input.GetKeyUp(crouch_key)) {
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+            rb.AddForce(Vector3.down * 100f, ForceMode.Impulse);
         }
     }
 
@@ -115,27 +123,37 @@ public class PlayerMovement : MonoBehaviour
     private void StateHandler()
     {
         //Mode sprinting
-        if(grounded && Input.GetKey(sprint_key))
+        if(grounded && Input.GetKey(sprint_key) && stamina > 0)
         {
             state = MoveState.sprint;
             move_speed = sprint_speed;
+            stamina -= stamina_run_use * Time.deltaTime;
         }
 
         //Mode Walking
-        else if(grounded) {
+        else if(grounded && !Input.GetKey(crouch_key)) {
             state = MoveState.walk;
             move_speed = walk_speed;
+            RestoreStamina();
         }
 
         //Mode crouching
-        else if(Input.GetKey(crouch_key)) {
+        else if(Input.GetKey(crouch_key) && grounded) {
             state = MoveState.crouch;
             move_speed = crouch_speed;
+            RestoreStamina();
         }
 
         //Mode Air
         else {
             state = MoveState.air;
+        }
+    }
+
+    private void RestoreStamina() 
+    {
+        if(stamina < max_stamina) {
+            stamina += staminaRecharge * Time.deltaTime;
         }
     }
 
@@ -148,7 +166,7 @@ public class PlayerMovement : MonoBehaviour
         if(OnSlope())
         {
             rb.AddForce(GetSlopeMoveDirection() * move_speed * 20f, ForceMode.Force);
-
+            //Push player into the slope when they are walking down
             if(rb.velocity.y > 0) {
                 rb.AddForce(Vector3.down * 80f, ForceMode.Force);
             }
@@ -230,7 +248,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    private Vector3 GetSlopeMoveDirection()//Detect the direction in which player needs to move on the slope
+    private Vector3 GetSlopeMoveDirection()//Calculate the direction in which player needs to move on the slope
     {
         return Vector3.ProjectOnPlane(move_direction, slope_hit.normal).normalized;//Make slope movement similar to movement on normal ground
     }
