@@ -161,10 +161,11 @@ public class PlayerMovement : MonoBehaviour
     {
         //Calculate movement direction
         move_direction = orientation.forward * vertical_input + orientation.right * horizontal_input;
-
+        Debug.Log(OnSlope());
         //On SLope
         if(OnSlope())
         {
+            
             rb.AddForce(GetSlopeMoveDirection() * move_speed * 20f, ForceMode.Force);
             //Push player into the slope when they are walking down
             if(rb.velocity.y > 0) {
@@ -240,7 +241,7 @@ public class PlayerMovement : MonoBehaviour
     private bool OnSlope()//Detect if player is moving on the slope
     {
         //Detect slope by shooting a raycast laser down
-        if(Physics.Raycast(transform.position, Vector3.down, out slope_hit, player_height * 0.5f + 0.3f))
+        if(Physics.Raycast(transform.position, Vector3.down, out slope_hit, player_height * 0.5f + 0.2f))
         {
             float angle = Vector3.Angle(Vector3.up, slope_hit.normal);//Check if angle is gay
             return angle < max_slope_angle && angle != 0;//True if slope is not straight and angle is bigger then 0
