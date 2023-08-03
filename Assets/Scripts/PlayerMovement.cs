@@ -37,6 +37,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Slope Handling")]
     public float max_slope_angle;
     private RaycastHit slope_hit;
+    private RaycastHit crouch_hit;
+    public LayerMask groundLayer;
 
     public float player_height;
     public Transform orientation;
@@ -91,6 +93,11 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         MovePlayer();
+
+        //Detect if player is above ground
+        if(Physics.Raycast(transform.position, Vector3.down, out crouch_hit, Mathf.Infinity, groundLayer))  {
+            Debug.Log("Test");
+        }
     }
 
     private void ActionInput()
@@ -161,7 +168,6 @@ public class PlayerMovement : MonoBehaviour
     {
         //Calculate movement direction
         move_direction = orientation.forward * vertical_input + orientation.right * horizontal_input;
-        Debug.Log(OnSlope());
         //On SLope
         if(OnSlope())
         {
