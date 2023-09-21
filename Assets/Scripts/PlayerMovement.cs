@@ -98,6 +98,9 @@ public class PlayerMovement : MonoBehaviour
         if(Physics.Raycast(transform.position, Vector3.down, out crouch_hit, Mathf.Infinity, groundLayer))  {
             Debug.Log("Test");
         }
+
+        //Detect something
+        bool hitting = Physics.Raycast(transform.position, Vector3.down, out crouch_hit, 3f, groundLayer);
     }
 
     private void ActionInput()
