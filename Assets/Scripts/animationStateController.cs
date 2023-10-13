@@ -17,7 +17,16 @@ public class animationStateController : MonoBehaviour
     {
         if (Input.GetKey("w")) {
             animator.SetBool("isWalking", true);
-
+        }
+        if (!Input.GetKey("w")) {
+            animator.SetBool("isWalking", false);
+            //animator.SetBool("isRunning", false);
+        }
+        if (Input.GetKey("w") && Input.GetKey(KeyCode.LeftShift)) {
+            animator.SetBool("isRunning", true);
+        }
+        if (!Input.GetKey("w") || !Input.GetKey(KeyCode.LeftShift)) {
+            animator.SetBool("isRunning", false);
         }
     }
 }
