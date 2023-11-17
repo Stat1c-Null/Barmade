@@ -373,7 +373,7 @@ GameObject:
   - component: {fileID: 266821478}
   - component: {fileID: 266821477}
   - component: {fileID: 266821476}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (5)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -1282,6 +1282,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69255fcdebd05442b0b11c5055dfc7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AddBulletSpread: 1
+  BulletSpreadVariance: {x: 0.1, y: 0.1, z: 0.1}
+  ShootingSystem: {fileID: 0}
+  BulletSpawnPoint: {fileID: 0}
+  ImpactParticleSystem: {fileID: 0}
+  BulletTrail: {fileID: 0}
+  ShootDelay: 0.5
+  Mask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!4 &1577357032 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4431748033715110340, guid: b0e4a3e7d69a88c40aa4d98f5d942c22, type: 3}
@@ -1652,8 +1662,8 @@ Transform:
   m_GameObject: {fileID: 1817707685}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 72.269745, y: 1, z: 62.63571}
+  m_LocalPosition: {x: 0, y: -10.1, z: 0}
+  m_LocalScale: {x: 72.269745, y: 22.187284, z: 62.63571}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

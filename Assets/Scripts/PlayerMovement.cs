@@ -88,6 +88,14 @@ public class PlayerMovement : MonoBehaviour
         } else {
             rb.drag = 0;
         }
+
+        //Detect something
+        bool hitting = Physics.Raycast(transform.position, Vector3.down, out crouch_hit, 1.1f, groundLayer);
+        if(hitting) {
+            Debug.Log("Touching");
+        } else {
+            Debug.Log("Not touching");
+        }
     }
 
     void FixedUpdate()
@@ -96,11 +104,8 @@ public class PlayerMovement : MonoBehaviour
 
         //Detect if player is above ground
         if(Physics.Raycast(transform.position, Vector3.down, out crouch_hit, Mathf.Infinity, groundLayer))  {
-            Debug.Log("Test");
+            //Debug.Log("Test");
         }
-
-        //Detect something
-        bool hitting = Physics.Raycast(transform.position, Vector3.down, out crouch_hit, 3f, groundLayer);
     }
 
     private void ActionInput()

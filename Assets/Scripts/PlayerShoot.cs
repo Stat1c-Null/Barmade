@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerShoot : MonoBehaviour
 {
+    private Gun Gun;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,5 +16,10 @@ public class PlayerShoot : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void OnShoot()
+    {
+        //Gun.Shoot();
     }
 }
