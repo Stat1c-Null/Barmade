@@ -112,7 +112,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4894527901673864232}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -180,6 +180,7 @@ GameObject:
   - component: {fileID: 277126584754432052}
   - component: {fileID: 3143787932760115340}
   - component: {fileID: 2496648728500496354}
+  - component: {fileID: 1596201923991755001}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -263,7 +264,19 @@ MonoBehaviour:
   max_slope_angle: 1
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   player_height: 2
   orientation: {fileID: 4431748033715110340}
   state: 0
+--- !u!114 &1596201923991755001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8024229375000932949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b35ac3c525a499946b669bca4dbe1da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
