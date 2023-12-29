@@ -2,10 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerShoot : MonoBehaviour
+public class Handgun : MonoBehaviour
 {
-    private Gun Gun;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -15,14 +13,6 @@ public class PlayerShoot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
-        {
-            OnShoot();
-        }
-    }
-
-    public void OnShoot()
-    {
-        Gun.Shoot();
+        
     }
 }
