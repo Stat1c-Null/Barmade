@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerShoot : MonoBehaviour
 {
+    [SerializeField]
     private Gun Gun;
 
     // Start is called before the first frame update
@@ -17,6 +18,7 @@ public class PlayerShoot : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
+            Debug.Log("Shot");
             OnShoot();
         }
     }
