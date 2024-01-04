@@ -18,7 +18,6 @@ public class PlayerShoot : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
-            Debug.Log("Shot");
             OnShoot();
         }
     }
