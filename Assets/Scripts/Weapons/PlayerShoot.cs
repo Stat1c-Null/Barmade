@@ -19,11 +19,17 @@ public class PlayerShoot : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             OnShoot();
+        } else {
+            StopShoot();
         }
     }
 
     public void OnShoot()
     {
         Gun.Shoot();
+    }
+
+    public void StopShoot(){
+        Gun.StopShoot();
     }
 }

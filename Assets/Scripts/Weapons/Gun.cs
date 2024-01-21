@@ -54,6 +54,11 @@ public class Gun : MonoBehaviour
 
     }
 
+    public void StopShoot()
+    {
+        ShootingSystem.Stop();
+    }
+
     private Vector3 GetDirection()
     {
         Vector3 direction = transform.forward;
